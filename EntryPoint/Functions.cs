@@ -12,6 +12,8 @@ namespace EntryPoint
     {
         public Vector2[] Buildings { get; set; }
         public Vector2 House { get; set; }
+        public static ITree<Vector2> specialBuildingsTree;
+        public static List<List<Vector2>> SelectedSpecialBuildings = new List<List<Vector2>>();
 
         /* Assignment 1 */
         public void MergeSort(int start, int end)
@@ -64,20 +66,67 @@ namespace EntryPoint
             var res = Math.Sqrt((disx + disy));
             return (float)res;
         }
-        /* Assignment 2 */
 
-        public static IBinaryTree<int> insertToTree(IBinaryTree<int> tail, int value)
+        /* Assignment 2 */
+        public static void createTree(Vector2[] specialBuildings)
+        {
+            specialBuildingsTree = new Empty<Vector2>() as ITree<Vector2>;
+            populateTree(specialBuildings, 0, specialBuildings.Length, 0);
+            Console.Write(specialBuildingsTree);
+        }
+
+        public static void populateTree(Vector2[] specialBuildings, int start, int end, int amount)
+        {
+            if (start < end)
+            {
+                int middle = (start + end) / 2;
+                specialBuildingsTree = insertInTree(specialBuildingsTree, specialBuildings[middle], start);
+                populateTree(specialBuildings, start, middle, amount + 1);
+                populateTree(specialBuildings, middle + 1, end, amount + 1);
+            }
+        }
+
+        public static ITree<Vector2> insertInTree(ITree<Vector2> tail, Vector2 value, int counter)
         {
             if (tail.IsEmpty)
-                return new Node<int>(new Empty<int>(), value, new Empty<int>());
+                return new Node<Vector2>(new Empty<Vector2>(), value, new Empty<Vector2>());
+
             if (tail.Value == value)
                 return tail;
-            if (value < tail.Value)
-                return new Node<int>(insertToTree(tail.Left, value), tail.Value, tail.Right);
+
+            if (counter % 2 == 0)
+                if (value.X <= tail.Value.X)
+                    return new Node<Vector2>(insertInTree(tail.Left, value, counter++), tail.Value, tail.Right);
+                else
+                    return new Node<Vector2>(tail.Left, tail.Value, insertInTree(tail.Right, value, counter++));
+
             else
-                return new Node<int>(tail.Left, tail.Value, insertToTree(tail.Right, value));
+                if (value.Y <= tail.Value.Y)
+                    return new Node<Vector2>(insertInTree(tail.Left, value, counter++), tail.Value, tail.Right);
+                else
+                    return new Node<Vector2>(tail.Left, tail.Value, insertInTree(tail.Right, value, counter++));
         }
-        static bool searchNode(IBinaryTree<int> tail, int value)
+        public static void filterTree(IEnumerable<Tuple<Vector2, float>> housesAndDistances, ITree<Vector2> SpecialBuildingsTree)
+        {
+            if (SpecialBuildingsTree.IsEmpty)
+                return;
+
+            List<Vector2> filteredBuildingList = new List<Vector2>();
+
+            foreach (var house in housesAndDistances)
+            {
+                if (calculateDistance(SpecialBuildingsTree.Value, house.Item1) <= house.Item2)
+                {
+                    filteredBuildingList.Add(SpecialBuildingsTree.Value);
+                }
+            }
+            SelectedSpecialBuildings.Add(filteredBuildingList);
+
+            filterTree(housesAndDistances, SpecialBuildingsTree.Left);
+            filterTree(housesAndDistances, SpecialBuildingsTree.Right);
+        }
+
+        static bool searchNode(ITree<Vector2> tail, Vector2 value)
         {
             if (tail.IsEmpty)
                 return false;
@@ -89,7 +138,7 @@ namespace EntryPoint
                     return searchNode(tail.Right, value);
             }
         }
-        static void printPreOrder<T>(IBinaryTree<T> tail)
+        static void printPreOrder<T>(ITree<T> tail)
         {
             if (tail.IsEmpty)
                 return;
@@ -97,7 +146,7 @@ namespace EntryPoint
             printPreOrder(tail.Left);
             printPreOrder(tail.Right);
         }
-        static void printInOrder<T>(IBinaryTree<T> tail)
+        static void printInOrder<T>(ITree<T> tail)
         {
             if (tail.IsEmpty)
                 return;
@@ -105,7 +154,7 @@ namespace EntryPoint
             Console.WriteLine(tail.Value);
             printInOrder(tail.Right);
         }
-        static void printPostOrder<T>(IBinaryTree<T> tail)
+        static void printPostOrder<T>(ITree<T> tail)
         {
             if (tail.IsEmpty)
                 return;

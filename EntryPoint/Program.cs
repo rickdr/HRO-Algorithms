@@ -58,8 +58,13 @@ namespace EntryPoint
           IEnumerable<Vector2> specialBuildings,
           IEnumerable<Tuple<Vector2, float>> housesAndDistances)
         {
-            Console.WriteLine(housesAndDistances);
-            var t = new Empty<int>() as IBinaryTree<int>;
+            Functions.createTree(specialBuildings.ToArray());
+            Functions.filterTree(housesAndDistances, Functions.specialBuildingsTree);
+            return Functions.SelectedSpecialBuildings;
+
+            //Functions.filterTree(housesAndDistances);
+            //Console.WriteLine(housesAndDistances);
+            //var t = new Empty<int>() as IBinaryTree<int>;
             //Functions.insertToTree
             //t = insertToTree(t, 50);
             //t = Insert(t, 25);
@@ -69,17 +74,18 @@ namespace EntryPoint
             //t = Insert(t, 80085);
             ////PrintInOrder(t);
             //Console.WriteLine(SearchElement(t, 68));
-            return
-                from h in housesAndDistances
-                select
-                  from s in specialBuildings
-                  where Vector2.Distance(h.Item1, s) <= h.Item2
-                  select s;
+            //return
+            //    from h in housesAndDistances
+            //    select
+            //      from s in specialBuildings
+            //      where Vector2.Distance(h.Item1, s) <= h.Item2
+            //      select s;
         }
 
         private static IEnumerable<Tuple<Vector2, Vector2>> FindRoute(Vector2 startingBuilding,
           Vector2 destinationBuilding, IEnumerable<Tuple<Vector2, Vector2>> roads)
         {
+            // Console.Write(roads);
             var startingRoad = roads.Where(x => x.Item1.Equals(startingBuilding)).First();
             List<Tuple<Vector2, Vector2>> fakeBestPath = new List<Tuple<Vector2, Vector2>>() { startingRoad };
             var prevRoad = startingRoad;

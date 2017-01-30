@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace EntryPoint
 {
-    interface IBinaryTree<T>
+    interface ITree<T>
     {
         bool IsEmpty { get; }
         T Value { get; }
-        IBinaryTree<T> Left { get; }
-        IBinaryTree<T> Right { get; }
+        ITree<T> Left { get; }
+        ITree<T> Right { get; }
     }
-    class Empty<T> : IBinaryTree<T>
+    class Empty<T> : ITree<T>
     {
         public bool IsEmpty
         {
@@ -23,7 +23,7 @@ namespace EntryPoint
             }
         }
 
-        public IBinaryTree<T> Left
+        public ITree<T> Left
         {
             get
             {
@@ -31,7 +31,7 @@ namespace EntryPoint
             }
         }
 
-        public IBinaryTree<T> Right
+        public ITree<T> Right
         {
             get
             {
@@ -47,22 +47,22 @@ namespace EntryPoint
             }
         }
     }
-    class Node<T> : IBinaryTree<T>
+    class Node<T> : ITree<T>
     {
         public bool IsEmpty
         {
             get
             {
-                return true;
+                return false;
             }
         }
 
-        public IBinaryTree<T> Left
+        public ITree<T> Left
         {
             get; set;
         }
 
-        public IBinaryTree<T> Right
+        public ITree<T> Right
         {
             get; set;
         }
@@ -71,7 +71,7 @@ namespace EntryPoint
         {
             get; set;
         }
-        public Node(IBinaryTree<T> left, T value, IBinaryTree<T> right)
+        public Node(ITree<T> left, T value, ITree<T> right)
         {
             this.Left = left;
             this.Value = value;
